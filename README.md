@@ -183,6 +183,24 @@ even if the tolerances are set to zero, so these are the
 defaults. Non-zero values for `xatol` and `xrtol` can be specified to
 reduce the number of function calls when lower precision is required.
 
+Automatically `catch` convergence errors as follows:
+
+```julia
+f(x) = x ^ 2 + 2 # has no (real) root!
+
+w = 0.0 # initialize root
+try
+    w = fzero(f, 0.001)
+catch wuts_the_error
+    if isa(wuts_the_error, Roots.ConvergenceFailed)
+        w = NaN # assign root as NaN if convergence failed
+    else
+        error("something unrelated to convergence went wrong.")
+    end
+end
+w # NaN
+```
+
 
 ## An alternate interface
 
