@@ -646,7 +646,7 @@ julia> fs = sign.(f.(ns));
 julia> f1s = sign.(f1.(ns));
 
 julia> [ns.-1/3 fs f1s]
-21×3 Array{Float64,2}:
+21×3 Matrix{Float64}:
  -5.55112e-16  -1.0  -1.0
  -4.996e-16    -1.0  -1.0
  -4.44089e-16  -1.0  -1.0
@@ -678,7 +678,7 @@ number.
 
 ```
 julia> findall(iszero, fs)
-2-element Array{Int64,1}:
+2-element Vector{Int64}:
  11
  12
 ```
@@ -692,7 +692,7 @@ away.
 
 ```
 julia> findall(iszero, f1s)
-1-element Array{Int64,1}:
+1-element Vector{Int64}:
  21
 ```
 
@@ -702,7 +702,7 @@ Further, there are several sign changes of the function values for `f1s`:
 
 ```
 julia> findall(!iszero,diff(sign.(f1s)))
-6-element Array{Int64,1}:
+6-element Vector{Int64}:
   3
   6
   8
