@@ -595,7 +595,12 @@ julia> find_zero(fn, x0, Order2()) ≈ xstar
 true
 
 julia> find_zero(fn, x0, Order2(), atol=0.0, rtol=0.0) # error: x_n ≉ x_{n-1}; just f(x_n) ≈ 0
-ERROR: Roots.ConvergenceFailed("Stopped at: xn = 2.9921081308371615. Too many steps taken. ")
+ERROR: Roots.ConvergenceFailed("Stopped at: xn = 2.991488255523429. Increment `Δx` has issues. Too many steps taken. ")
+Stacktrace:
+ [1] find_zero(fs::Function, x0::Float64, method::Order2, N::Nothing; tracks::Roots.NullTracks, verbose::Bool, p::Nothing, kwargs::Base.Iterators.Pairs{Symbol, Float64, Tuple{Symbol, Symbol}, NamedTuple{(:atol, :rtol), Tuple{Float64, Float64}}})
+   @ Roots ~/julia/Roots/src/find_zero.jl:757
+ [2] top-level scope
+   @ none:1
 
 julia> fn = x -> (sin(x)*cos(x) - x^3 + 1)^9;
 
@@ -629,13 +634,13 @@ x_2 =  3.1415926535897936,	 fx_2 = -0.0000000000000003
 
 julia> find_zero(x->sin(x)^5, 3.0, Order2(), verbose=true) # 22 iterations
 Results of univariate zero finding:
- 
-* Converged to: 3.1405349388309682
+
+* Converged to: 3.140534939851113
 * Algorithm: Order2()
 * iterations: 22
 * function evaluations: 46
 * stopped as |f(x_n)| ≤ max(δ, max(1,|x|)⋅ϵ) using δ = atol, ϵ = rtol
- 
+
 Trace:
 x_0 =  3.0000000000000000,	 fx_0 =  0.0000559684091879
 x_1 =  3.0285315910604353,	 fx_1 =  0.0000182783542076
@@ -645,33 +650,33 @@ x_4 =  3.0838393517913989,	 fx_4 =  0.0000006407325974
 x_5 =  3.0954031275790856,	 fx_5 =  0.0000002098675747
 x_6 =  3.1046476918938040,	 fx_6 =  0.0000000687514870
 x_7 =  3.1120400753639790,	 fx_7 =  0.0000000225247921
-x_8 =  3.1179523212358133,	 fx_8 =  0.0000000073801574
-x_9 =  3.1226812716696233,	 fx_9 =  0.0000000024181703
-x_10 =  3.1264639996594568,	 fx_10 =  0.0000000007923528
-x_11 =  3.1294899615139866,	 fx_11 =  0.0000000002596312
-x_12 =  3.1319106162511252,	 fx_12 =  0.0000000000850746
-x_13 =  3.1338470835788823,	 fx_13 =  0.0000000000278769
-x_14 =  3.1353962360531371,	 fx_14 =  0.0000000000091346
-x_15 =  3.1366355527631327,	 fx_15 =  0.0000000000029932
-x_16 =  3.1376269803653933,	 fx_16 =  0.0000000000009808
-x_17 =  3.1384199604754857,	 fx_17 =  0.0000000000003215
-x_18 =  3.1390543960772170,	 fx_18 =  0.0000000000001054
-x_19 =  3.1395625841685040,	 fx_19 =  0.0000000000000345
-x_20 =  3.1399667214675673,	 fx_20 =  0.0000000000000114
-x_21 =  3.1402867582538070,	 fx_21 =  0.0000000000000038
-x_22 =  3.1405349388309682,	 fx_22 =  0.0000000000000013
- 
-3.1405349388309682
+x_8 =  3.1179523212360416,	 fx_8 =  0.0000000073801574
+x_9 =  3.1226812716693950,	 fx_9 =  0.0000000024181703
+x_10 =  3.1264639996586729,	 fx_10 =  0.0000000007923528
+x_11 =  3.1294899615147704,	 fx_11 =  0.0000000002596312
+x_12 =  3.1319106162503414,	 fx_12 =  0.0000000000850746
+x_13 =  3.1338470835729701,	 fx_13 =  0.0000000000278769
+x_14 =  3.1353962361189192,	 fx_14 =  0.0000000000091346
+x_15 =  3.1366355527270868,	 fx_15 =  0.0000000000029932
+x_16 =  3.1376269806673180,	 fx_16 =  0.0000000000009808
+x_17 =  3.1384199603056921,	 fx_17 =  0.0000000000003215
+x_18 =  3.1390543962469541,	 fx_18 =  0.0000000000001054
+x_19 =  3.1395625842920500,	 fx_19 =  0.0000000000000345
+x_20 =  3.1399667213451634,	 fx_20 =  0.0000000000000114
+x_21 =  3.1402867571209034,	 fx_21 =  0.0000000000000038
+x_22 =  3.1405349398511131,	 fx_22 =  0.0000000000000013
+
+3.140534939851113
 
 julia> find_zero(x->sin(x)^5, 3.0, Roots.Order2B(), verbose=true) # 2 iterations
 Results of univariate zero finding:
- 
+
 * Converged to: 3.1397074174874358
 * Algorithm: Roots.Order2B()
 * iterations: 41
 * function evaluations: 85
 * Note: Estimate for multiplicity had issues. Too many steps taken.
-	  Algorithm stopped early, but |f(xn)| < ϵ^(1/3), where ϵ depends on xn, rtol, and atol.
+	Algorithm stopped early, but |f(xn)| < ϵ^(1/3), where ϵ depends on xn, rtol, and atol.
 
 Trace:
 x_0 =  3.0000000000000000,	 fx_0 =  0.0000559684091879
@@ -716,7 +721,7 @@ x_38 =  3.1397074174874358,	 fx_38 =  0.0000000000000238
 x_39 =  3.1397074174874358,	 fx_39 =  0.0000000000000238
 x_40 =  3.1397074174874358,	 fx_40 =  0.0000000000000238
 x_41 =  3.1397074174874358,	 fx_41 =  0.0000000000000238
- 
+
 3.1397074174874358
 
 ```

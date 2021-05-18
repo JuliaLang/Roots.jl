@@ -15,6 +15,7 @@ julia> using Roots
 
 julia> using Plots, ForwardDiff
 
+
 ```
 
 ## Bracketing
@@ -605,7 +606,7 @@ x^2 + 270\cdot x^3 - 405\cdot x^4 + 243\cdot x^5$. Mathematically
 these are the same, however not so when evaluated in floating
 point. Here we look at the 21 floating point numbers near $1/3$:
 
-```jldoctest
+```jldoctest roots
 julia> f(x) = (3x-1)^5
 f (generic function with 1 method)
 
@@ -621,7 +622,7 @@ julia> u=1/3; for i in 1:10 (global  u=prevfloat(u);push!(ns, u)) end
 julia> sort!(ns);
 
 julia> maximum(abs.(f.(ns) - f1.(ns)))
-1.5543122344752192e-15
+1.887379141862766e-15
 
 ```
 
@@ -640,16 +641,18 @@ small differences might matter. Here we look at the signs of the
 function values:
 
 
-```jldoctest
+```jldoctest roots
 julia> fs = sign.(f.(ns));
 
+
 julia> f1s = sign.(f1.(ns));
+
 
 julia> [ns.-1/3 fs f1s]
 21×3 Matrix{Float64}:
  -5.55112e-16  -1.0  -1.0
  -4.996e-16    -1.0  -1.0
- -4.44089e-16  -1.0   1.0
+ -4.44089e-16  -1.0  -1.0
  -3.88578e-16  -1.0   1.0
  -3.33067e-16  -1.0   1.0
  -2.77556e-16  -1.0   1.0
@@ -657,16 +660,15 @@ julia> [ns.-1/3 fs f1s]
  -1.66533e-16  -1.0  -1.0
  -1.11022e-16  -1.0   1.0
  -5.55112e-17  -1.0   1.0
-  0.0           0.0  -1.0
-  5.55112e-17   0.0   1.0
+  ⋮
   1.11022e-16   1.0   1.0
-  1.66533e-16   1.0  -1.0
+  1.66533e-16   1.0   1.0
   2.22045e-16   1.0  -1.0
   2.77556e-16   1.0  -1.0
   3.33067e-16   1.0   1.0
   3.88578e-16   1.0   1.0
   4.44089e-16   1.0   1.0
-  4.996e-16     1.0  -1.0
+  4.996e-16     1.0   1.0
   5.55112e-16   1.0   0.0
 ```
 
@@ -676,7 +678,7 @@ Parsing this shows a few surprises. First, there are two zeros of
 floating point value of `1/3` and the next largest floating point
 number. 
 
-```jldoctest
+```jldoctest roots
 julia> findall(iszero, fs)
 2-element Vector{Int64}:
  11
@@ -690,7 +692,7 @@ point value for `1/3` but rather 10 floating point numbers
 away. 
 
 
-```jldoctest
+```jldoctest roots
 julia> findall(iszero, f1s)
 1-element Vector{Int64}:
  21
@@ -700,17 +702,14 @@ julia> findall(iszero, f1s)
 
 Further, there are several sign changes of the function values for `f1s`:
 
-```jldoctest
+```jldoctest roots
 julia> findall(!iszero,diff(sign.(f1s)))
-9-element Vector{Int64}:
-  2
+6-element Vector{Int64}:
+  3
   6
   8
- 10
- 11
- 13
+ 14
  16
- 19
  20
 
 ```
@@ -998,20 +997,25 @@ zeros, can lead to misidentification.
 
 ### IntervalRootFinding
 
-The [IntervalRootFinding](https://github.com/JuliaIntervals/IntervalRootFinding.jl) package rigorously identifies isolating intervals for the zeros of a function. This example, from that package's README, is used to illustrate the differences:
+The [IntervalRootFinding](https://github.com/JuliaIntervals/IntervalRootFinding.jl) package **rigorously** identifies isolating intervals for the zeros of a function. This example, from that package's README, is used to illustrate the differences:
 
-```jldoctest
-julia> using IntervalArithmetic, IntervalRootFinding, Roots
+```
+julia> using IntervalArithmetic, IntervalRootFinding
 
 julia> f(x) = sin(x) - 0.1*x^2 + 1
 f (generic function with 1 method)
 
-julia> rts = roots(f, -10..10)
-4-element Vector{Root{Interval{Float64}}}:
+julia> roots(f, -10..10)
+4-element Array{Root{Interval{Float64}},1}:
  Root([3.14959, 3.1496], :unique)
  Root([-4.42654, -4.42653], :unique)
- Root([-3.10682, -3.10681], :unique)
  Root([-1.08205, -1.08204], :unique)
+ Root([-3.10682, -3.10681], :unique)
+```
+
+```jldoctest roots
+julia> f(x) = sin(x) - 0.1*x^2 + 1
+f (generic function with 1 method)
 
 julia> find_zeros(f, -10, 10)
 4-element Vector{Float64}:
@@ -1021,13 +1025,4 @@ julia> find_zeros(f, -10, 10)
   3.1495967624505226
 ```
 
-Using that in this case, the intervals are bracketing intervals for `f`, we can find the zeros from the `roots` ouput with the following:
-
-```jldoctest roots
-julia> [find_zero(f, (interval(u).lo, interval(u).hi)) for u ∈ rts if u.status == :unique]
-4-element Vector{Float64}:
-  3.1495967624505226
- -4.426534982071949
- -3.1068165552293254
- -1.082042132760718
-```
+The enclosing intervals returned by `IntervalRootFinding` above are bracketing intervals, so for any one of them, say `I`, something like `find_zero(f, interval(I).lo, interval(I).hi)` could be employed to find the zero.

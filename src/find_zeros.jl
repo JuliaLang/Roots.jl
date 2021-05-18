@@ -263,15 +263,22 @@ a much more rigid condition for a potential zero.
 
 For example, this function (due to `@truculentmath`) is particularly tricky, as it is positive at every floating point number, but has two zeros (the vertical asymptote at `15//11` is negative between adjacent floating point values):
 
-```jldoctest
-julia> using IntervalArithmetic, IntervalRootFinding, Roots
-[ Info: Precompiling Roots [f2b01f46-fcfa-551c-844a-d8ac1e96c665]
-^[[A
+```jldoctest find_zeros
 julia> g(x) = x^2 + 1 +log(abs( 11*x-15 ))/99
 g (generic function with 1 method)
 
 julia> find_zeros(g, -3, 3)
 Float64[]
+```
+
+The rigorous approach provided by `IntervalRootFinding` also has issues with this function, but it provides a more informed answer that the specified interval has an unknown number of zeros:
+
+
+```
+julia> using IntervalArithmetic, IntervalRootFinding
+
+julia> g(x) = x^2 + 1 +log(abs( 11*x-15 ))/99
+g (generic function with 1 method)
 
 julia> IntervalRootFinding.roots(g, -3..3, IntervalRootFinding.Bisection)
 1-element Vector{Root{Interval{Float64}}}:
@@ -280,7 +287,7 @@ julia> IntervalRootFinding.roots(g, -3..3, IntervalRootFinding.Bisection)
 
 A less extreme usage might be the following, where `unique` indicates Bisection could be useful and indeed `find_zeros` will identify these values:
 
-```jldoctest
+```
 julia> g(x) = exp(x) - x^5
 g (generic function with 1 method)
 
